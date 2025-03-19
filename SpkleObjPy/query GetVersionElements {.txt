@@ -1,0 +1,28 @@
+query GetVersionElements {
+  project(id: "ac6cbce299") {
+    name
+    # model(id: "6739077288") {
+    #   name
+      object(id: "168d1b155a3e51456d807946e6d9b971"){
+        data <<<<<<<<
+        # children(depth: $depth, query: $myQuery, select:["Volume"]){ 
+          
+        #   objects{
+        #     data
+        #   }
+        # }
+      }
+      
+      # Replace this with the ID from versions.items[].id that you want
+      # version(id: "f960d017cf") {
+      #   id
+      #   message
+      #   referencedObject
+
+      #   # The 'object' field lets us retrieve the top-level Base object data.
+      #   # 'depth' controls how many levels of sub-objects to expand automatically
+
+      # }
+    # }
+  }
+}
