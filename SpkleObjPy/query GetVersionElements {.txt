@@ -21,3 +21,43 @@ query Query($projectId: String!, $objectId: String!, $myQuery: [JSONObject!], $s
   ],
   "select": null,
 }
+
+-----------------------------------
+// Dual Query 
+-----------------------------------
+
+query Query($projectId: String!, $objectId1: String!,  $myQuery: [JSONObject!], $select: [String], $objectId2: String! ) {
+  project(id: $projectId) {
+    A: object(id: $objectId1) {
+      id
+      children(query: $myQuery, select: $select) {
+        totalCount
+        objects {
+          data
+        }
+      }
+    }
+    B: object(id: $objectId2) {
+      id
+      children(query: $myQuery, select: $select) {
+        totalCount
+        objects {
+          data
+        }
+      }
+    }
+  }
+}
+
+{
+  "projectId": "d064a7b601",
+  "objectId1": "2e4f0b9eed299702a78a259d65b68a65",
+  "objectId2": "c4545c3e7135e719ec5941f9684884ae",
+
+  "myQuery": [
+    { "field": "Volume", "operator": "=", "value": "PG" }
+
+  ],
+  "select": "Title",
+
+}

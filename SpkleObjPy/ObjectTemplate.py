@@ -1,4 +1,5 @@
 import os 
+from datetime import datetime
 
 from specklepy.api.client import SpeckleClient
 from specklepy.api.credentials import get_default_account
@@ -9,12 +10,13 @@ from specklepy.api.operations import send
 
 import pandas as pd 
 
+
 #-------------------------------------------------------
 # Inputs
 #-------------------------------------------------------
 
 excelPath = r"C:\Users\vrajasekar\Downloads\simpleTable.xlsx"
-stream_name = "Dwg Database"
+stream_name = "DrawingDatabase"
 
 #-------------------------------------------------------
 # Read excel
@@ -33,22 +35,8 @@ row_count = df.shape[0]
 # Object creation
 #-------------------------------------------------------
 
-# Dictionary but dwg_objs go into a "element" property of the Base
-
-# dwg_objs = {}
-# for i in range(row_count):
-#     key = f"dObj{i}"
-#     dwg_objs[key] = Base()
-#     for h in header:
-#         dwg_objs[key][h] = df.iloc[i][h]
-
-# print(dwg_objs['dObj2']['BIM 360 PDF Link'])
-
 # STEP 2: Create a parent Base object
 parent = Base()
-
-# Prepare a list for child objects (or store them directly in a property named e.g. "elements").
-# child_objects = []
 
 # STEP 3: Convert each row into a separate Base (child) object
 for i, row_data in df.iterrows():
@@ -60,18 +48,10 @@ for i, row_data in df.iterrows():
     for col_name in df.columns:
         child[col_name] = row_data[col_name]
 
+    # ADD A UNIQUE TIMESTAMP
+    child["timestamp"] = datetime.utcnow().isoformat()
+
     parent[f"@child_{i}"] = child
-
-    # Collect the child object in a list
-    # child_objects.append(child)
-
-# Attach all children to parent in a property called "elements"
-# parent.elements = child_objects
-
-# parent["@elements"] = child_objects
-# parent.speckle_type = "Base"
-# parent.add_detachable_attrs("element")
-# parent.add_detachable_attrs("elements", child_objects)
 
 # Send to speckle
 
@@ -95,20 +75,15 @@ stream_id = stream.id
 print("Using stream:", stream.name, "with id:", stream_id)
 
 # This is the model/branch
-client.branch.create(stream_id, name = "BaseDwgObjs", description = "Uploaded drawing objects as a Base object")
+client.branch.create(stream_id, name = "UniqueDwgs", description = "Uploaded drawing objects as a Base object")
 
 transport = ServerTransport(client=client, stream_id=stream_id)
 
-# parent = Base()
-# parent.elements = list(dwg_objs.values())
-# object_id = send(base=parent, transports=[transport])
-
 parent_id = send(base=parent, transports=[transport])
-
 
 commit_id = client.commit.create(
     stream_id=stream_id,
     object_id=parent_id,
-    branch_name="BaseDwgObjs",
+    branch_name="UniqueDwgs",
     message="Uploaded detached child as queriable children"
 )
