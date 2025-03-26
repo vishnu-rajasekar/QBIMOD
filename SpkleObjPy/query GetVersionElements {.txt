@@ -61,3 +61,25 @@ query Query($projectId: String!, $objectId1: String!,  $myQuery: [JSONObject!], 
   "select": "Title",
 
 }
+
+-----------------------------------
+// Collection Query 
+-----------------------------------
+
+query Query($projectId: String!, $objectId: String!) {
+  project(id: $projectId) {
+    object(id: $objectId) {
+      id
+      children {
+        objects {
+          data
+        }
+      }
+    }
+  }
+}
+
+{
+  "projectId": "57e75cca21",
+  "objectId": "ff489727e677c37dde65cfa8b1e521e0"
+}
